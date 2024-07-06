@@ -1,9 +1,7 @@
 from app import app, db
 from flask import request, jsonify
 from models import Message
-import datetime
-
-# datetime.date.today().strftime("%B %d, %Y")
+from datetime import datetime
 
 
 # Get all messages
@@ -40,7 +38,9 @@ def create_message():
         author_gender = data.get("authorGender")
 
         # Fetch avatar image based on gender
-        if author_gender == "male":
+        if data.get("authorImgUrl") is not None:
+            author_img_url = data.get("authorImgUrl")
+        elif author_gender == "male":
             author_img_url = (
                 f"https://avatar.iran.liara.run/public/boy?username={author_nickname}"
             )
@@ -55,7 +55,7 @@ def create_message():
             author_nickname=author_nickname,
             author_role=author_role,
             message_text=message_text,
-            message_datetime=datetime.date.today().strftime("%B %d, %Y"),
+            message_datetime=datetime.now().strftime("%B %d, %Y %H:%M:%S"),
             author_gender=author_gender,
             author_img_url=author_img_url,
         )
@@ -95,7 +95,7 @@ def edit_message(id):
         message.author_nickname = data.get("authorNickname", message.author_nickname)
         message.author_role = data.get("authorRole", message.author_role)
         message.message_text = data.get("messageText", message.message_text)
-        message.message_datetime = datetime.date.today().strftime("%B %d, %Y")
+        message.message_datetime = datetime.now().strftime("%B %d, %Y %H:%M:%S")
         message.author_gender = data.get("gender", message.author_gender)
 
         db.session.commit()
